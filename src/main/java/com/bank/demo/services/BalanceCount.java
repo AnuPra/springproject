@@ -9,7 +9,7 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.ForeachAction;
+//import org.apache.kafka.streams.kstream.ForeachAction;
 import org.apache.kafka.streams.kstream.KGroupedStream;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
@@ -34,7 +34,7 @@ public class BalanceCount {
  
         final Serde<String> stringSerde = Serdes.String();
          
-        KStream<String, String> source = builder.stream("test", Consumed.with(stringSerde, stringSerde));
+        KStream<String, String> source = builder.stream("transaction-input", Consumed.with(stringSerde, stringSerde));
         
         source.filter((key,value)-> value.contains("balance"));
         	 
@@ -45,11 +45,11 @@ public class BalanceCount {
       
         /*counts.foreach(new ForeachAction<String, Long>() {
             public void apply(String key, Long value) {
-                System.out.println(key + "-" + value);
+                System.out.printlnbalance(key + "-" + value);
             }
          });*/
       
-        counts.toStream().to("streams-wordcount-output",Produced.with(Serdes.String(), Serdes.Long()));
+        counts.toStream().to("balance-output",Produced.with(Serdes.String(), Serdes.Long()));
         
         final Topology topology = builder.build();
         System.out.println(topology.describe());
