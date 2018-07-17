@@ -1,11 +1,11 @@
-package com.bank.demo.dto;
+package com.bank.demo.pojo.response;
 
-public class BalanceInq implements Comparable<Long>{
+public class TopAccountsResponse implements Comparable<Long>{
 
 	private String acctId;
 	private String count;
 	
-	public BalanceInq(String acctId, Long count) {
+	public TopAccountsResponse(String acctId, Long count) {
 		this.acctId = acctId;
 		this.count = count.toString();
 	}
