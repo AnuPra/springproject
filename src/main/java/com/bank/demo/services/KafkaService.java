@@ -10,13 +10,12 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import com.bank.demo.pojo.TopTransactingAcct;
 import com.bank.demo.pojo.TopTransactingFactory;
 import com.bank.demo.pojo.response.TopAccountsResponse;
 import com.bank.demo.pojo.enums.KafkaTopicEnum;
 
 @Service
-public class KafkaService {
+public class KafkaService implements IMessageService{
 	
 	@Autowired
 	TopTransactingFactory topTransactingFactory;
@@ -38,7 +37,7 @@ public class KafkaService {
 	}
 
 	public void sendMessage(String key, String msg) {
-	    kafkaTemplate.send("transaction-input", key, key+":"+msg);
+		kafkaTemplate.send("transaction-input", key, key+":"+msg);
 	}
 
 	public ArrayList<TopAccountsResponse> getTopRecords(KafkaTopicEnum topic) throws Exception {

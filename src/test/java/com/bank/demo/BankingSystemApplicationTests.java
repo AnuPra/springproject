@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,26 +40,33 @@ public class BankingSystemApplicationTests {
 	@Test
 	public void createAccount() throws Exception {
 		
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/create")
+		TransactionRequest transactionRequest = new TransactionRequest();
+		transactionRequest.setAmt(9876.00);
+		
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/account/create")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsBytes(new TransactionRequest(9876.00)));
+				.content(objectMapper.writeValueAsBytes(transactionRequest));
 		
 		mvc.perform(requestBuilder)
         .andExpect(status().isOk())
         .andExpect(content().string(equalTo("{\"id\":3,\"amt\":9876.0}")));
 	}
 	
+	@Ignore
     @Test
     public void getHello() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.get("/").accept(MediaType.APPLICATION_JSON))
+        mvc.perform(MockMvcRequestBuilders.get("/account"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(equalTo("Greetings from Spring Boot!")));
     }
 
     @Test
     public void balanceReturns200() throws Exception {
-    	
-    	mvc.perform(get("/balance/1").contentType(MediaType.APPLICATION_JSON))
+    	RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/account/balance")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsBytes(new TransactionRequest(1)));
+		
+    	mvc.perform(requestBuilder)
     	.andExpect(status().isOk())
     	.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
     	.andExpect(jsonPath("$.amt", is(5000.0)));
@@ -67,7 +75,7 @@ public class BankingSystemApplicationTests {
     @Test
     public void depositReturns200() throws Exception {
     	
-    	RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/deposit/1")
+    	RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/account/deposit")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsBytes(new TransactionRequest(1,98.00)));
 		
@@ -80,9 +88,9 @@ public class BankingSystemApplicationTests {
     @Test
     public void depositThrows404() throws Exception {
     	
-    	RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/deposit/5")
+    	RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/account/deposit")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsBytes(new TransactionRequest(1,98.00)));
+				.content(objectMapper.writeValueAsBytes(new TransactionRequest(3,98.00)));
 		
     	mvc.perform(requestBuilder)
     	.andExpect(status().isNotFound());
@@ -91,7 +99,7 @@ public class BankingSystemApplicationTests {
     @Test
     public void withdrawalReturns200() throws Exception {
     	
-    	RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/withdraw/1")
+    	RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/account/withdraw")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsBytes(new TransactionRequest(1,98.00)));
 	
@@ -104,9 +112,9 @@ public class BankingSystemApplicationTests {
     @Test
     public void withdrawalThrows404() throws Exception {
     	
-    	RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/withdraw/5")
+    	RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/account/withdraw")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsBytes(new TransactionRequest(1,98.00)));
+				.content(objectMapper.writeValueAsBytes(new TransactionRequest(3,98.00)));
 	
     	mvc.perform(requestBuilder)
     	.andExpect(status().isNotFound());

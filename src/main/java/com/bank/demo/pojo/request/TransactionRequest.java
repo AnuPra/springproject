@@ -9,18 +9,20 @@ public class TransactionRequest {
 		this.amt = amt;
 	}
 	
-	public TransactionRequest(Double amt) {
-		this.amt = amt;
-	}
-	
-	public void setId(long id) {
+	public TransactionRequest(long id) {
 		this.id = id;
 	}
+	
+	public TransactionRequest() {}
 	
 	public long getId() {
 		return id;
 	}
-	
+
+	public String getIdAsString() {
+		return String.valueOf(id);
+	}
+
 	public void setAmt(Double amt) {
 		this.amt = amt;
 	}
