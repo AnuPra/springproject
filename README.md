@@ -9,9 +9,8 @@ Getting Started
 
 Built With
 1)	Spring Boot
-2)	Kafka 
-3)	Hibernate 
-4)	MySQL
+2)	Kafka  
+3)	MySQL
 
 Author
 •	Anusha Pratty
