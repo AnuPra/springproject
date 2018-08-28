@@ -10,13 +10,12 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import com.bank.demo.dto.BalanceInq;
-import com.bank.demo.dto.TopTransactingAcct;
-import com.bank.demo.dto.TopTransactingFactory;
-import com.bank.demo.dto.TopicEnum;
+import com.bank.demo.pojo.TopTransactingFactory;
+import com.bank.demo.pojo.response.TopAccountsResponse;
+import com.bank.demo.pojo.enums.KafkaTopicEnum;
 
 @Service
-public class KafkaService {
+public class KafkaService implements IMessageService{
 	
 	@Autowired
 	TopTransactingFactory topTransactingFactory;
@@ -33,42 +32,15 @@ public class KafkaService {
 		
 	    Long cnt = (Long) cr.value();
 	    String id = (String) cr.key();
-	    TopicEnum topic = TopicEnum.compute(cr.topic());
+	    KafkaTopicEnum topic = KafkaTopicEnum.compute(cr.topic());
 	    topTransactingFactory.addRecord(id, cnt, topic);
 	}
 
 	public void sendMessage(String key, String msg) {
-	    kafkaTemplate.send("transaction-input", key, key+":"+msg);
-	}
-	
-	@Autowired
-	TopTransactingAcct acctWithMaxBalanceInq;
-	
-	
-	
-	
-	
-	
-	@Autowired
-	TopTransactingAcct acctWithMaxWithdrawalInq;
-	
-	public void addRecord(String id, Long cnt, TopicEnum topic) throws Exception {
-		switch(topic) {
-		case BALANCE: { acctWithMaxBalanceInq.addRecord(id, cnt); break; }
-		case WITHDRAWAL: { acctWithMaxWithdrawalInq.addRecord(id, cnt); break; }
-		default: throw new Exception("Invalid topic");
-		}
-	}
-	
-	public ArrayList<BalanceInq> getRecords(TopicEnum topic) throws Exception {
-		switch(topic) {
-		case BALANCE: return acctWithMaxBalanceInq.top();
-		case WITHDRAWAL: return acctWithMaxWithdrawalInq.top();
-		default: throw new Exception("Invalid topic");
-		}
+		kafkaTemplate.send("transaction-input", key, key+":"+msg);
 	}
 
-	public ArrayList<BalanceInq> getTopRecords(TopicEnum topic) {
+	public ArrayList<TopAccountsResponse> getTopRecords(KafkaTopicEnum topic) throws Exception {
 		return topTransactingFactory.getRecords(topic);
 	}
 }
